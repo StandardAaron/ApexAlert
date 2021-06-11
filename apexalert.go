@@ -18,20 +18,20 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gen2brain/beeep"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"sync"
 	"time"
-	"github.com/gen2brain/beeep"
 )
 
 // Current and Next are reusable types in their parent structs
 // which saves us some lines :D
 type CurrentMap struct {
-	Start             int64    `json:"start"`
-	End               int64    `json:"end"`
+	Start             int64  `json:"start"`
+	End               int64  `json:"end"`
 	ReadableDateStart string `json:"readableDate_start"`
 	ReadableDateEnd   string `json:"readableDate_end"`
 	Map               string `json:"map"`
@@ -43,8 +43,8 @@ type CurrentMap struct {
 }
 
 type NextMap struct {
-	Start             int64   `json:"start"`
-	End               int64   `json:"end"`
+	Start             int64  `json:"start"`
+	End               int64  `json:"end"`
 	ReadableDateStart string `json:"readableDate_start"`
 	ReadableDateEnd   string `json:"readableDate_end"`
 	Map               string `json:"map"`
@@ -90,7 +90,7 @@ func getApiUrl() (apiUrl string) {
 	return
 }
 
-func getMapRotationData() ApexMaps{
+func getMapRotationData() ApexMaps {
 	//Hit the endpoint
 	apiURL := getApiUrl()
 	resp, err := http.Get(apiURL)
@@ -112,27 +112,27 @@ func getMapRotationData() ApexMaps{
 	return apexMapData
 }
 
-func mapWatcher (mapType string) {
+func mapWatcher(mapType string) {
 	for {
 		apex := getMapRotationData()
 		var current CurrentMap
 		var next NextMap
 		switch mapType {
-			case "Arenas":
-				current = apex.Arenas.CurrentMap
-				next = apex.Arenas.NextMap
-			case "Battle Royale":
-				current = apex.BattleRoyale.CurrentMap
-				next = apex.BattleRoyale.NextMap
-			default:
-				panic("no type given to mapWatcher.")
+		case "Arenas":
+			current = apex.Arenas.CurrentMap
+			next = apex.Arenas.NextMap
+		case "Battle Royale":
+			current = apex.BattleRoyale.CurrentMap
+			next = apex.BattleRoyale.NextMap
+		default:
+			panic("no type given to mapWatcher.")
 		}
-		Head := mapType+" is now on "+current.Map+"!"
-		Subhead := "Next up is "+next.Map+" in "+strconv.Itoa(current.RemainingMins)+" Mins."
+		Head := mapType + " is now on " + current.Map + "!"
+		Subhead := "Next up is " + next.Map + " in " + strconv.Itoa(current.RemainingMins) + " Mins."
 		issueAlert(Head, Subhead, notificationAsset)
 		//use seconds remainging to sleep, and add a buffer so we dont get caught in a scenario
 		//where RemainingSecs is 0 and we call the API again immediately (and dupe alerts)
-		time.Sleep(time.Duration(current.RemainingSecs + 5) * time.Second)
+		time.Sleep(time.Duration(current.RemainingSecs+5) * time.Second)
 	}
 }
 
@@ -148,17 +148,17 @@ var notificationAsset string = "assets/apexAlertIcon.jpg"
 
 func main() {
 	/*
-	I'd like to clean this up,
-	we want the mapWatcher goroutines to be long-lived,
-	but there's currently no exit criteria so this is
-	"runs till Ctrl-C behaviour."
+		I'd like to clean this up,
+		we want the mapWatcher goroutines to be long-lived,
+		but there's currently no exit criteria so this is
+		"runs till Ctrl-C behaviour."
 
-	I have also explored using recievers/Go methods
-	for calling {gameModeState}.mapWatcher(),
-	but that would require a redesign using timers instead of sleep.
+		I have also explored using recievers/Go methods
+		for calling {gameModeState}.mapWatcher(),
+		but that would require a redesign using timers instead of sleep.
 	*/
 	var wg sync.WaitGroup
-	var gameModes = []string{"Arenas","Battle Royale"}
+	var gameModes = []string{"Arenas", "Battle Royale"}
 
 	for i := 0; i < len(gameModes); i++ {
 		wg.Add(1)
