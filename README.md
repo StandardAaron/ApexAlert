@@ -1,5 +1,5 @@
-![apexAlertIcon](https://user-images.githubusercontent.com/15215359/121576326-43b4eb00-c9f6-11eb-9c36-38adb5ab2621.png)
-# ApexAlert
+![aaBanner](https://user-images.githubusercontent.com/15215359/121749073-0de83300-cad8-11eb-8306-d8f69334731b.jpg)
+
 
 A desktop notification app for Apex Legends map rotations. Using https://apexlegendsapi.com/ and [Beeep](https://github.com/gen2brain/beeep), a cross-platform Go notification library.
 
