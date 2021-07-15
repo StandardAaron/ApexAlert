@@ -1,3 +1,5 @@
+// +build linux,amd64 windows
+
 package main
 
 /* to-do:
@@ -18,13 +20,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gen2brain/beeep"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/gen2brain/beeep"
+	"github.com/hashicorp/hcl/v2/hclsimple"
 )
 
 // Current and Next are reusable types in their parent structs
@@ -80,13 +83,22 @@ type ApexMaps struct {
 	Ranked       Ranked       `json:"ranked"`
 }
 
+type Configuration struct {
+	ApiKey string `hcl:"api_key"`
+}
+
+func readConfig() (config Configuration) {
+	err := hclsimple.DecodeFile("config.hcl", nil, &config)
+	if err != nil {
+		panic(fmt.Sprintf("Failed to load configuration: %s", err))
+	}
+	return
+}
+
 func getApiUrl() (apiUrl string) {
 	//Make sure you request a key from https://apexlegendsapi.com/
-	apiKey, err := ioutil.ReadFile("api.key")
-	if err != nil {
-		panic(err)
-	}
-	apiUrl += "https://api.mozambiquehe.re/maprotation?version=2&auth=" + string(apiKey)
+	c := readConfig()
+	apiUrl += "https://api.mozambiquehe.re/maprotation?version=2&auth=" + string(c.ApiKey)
 	return
 }
 
