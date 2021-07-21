@@ -3,7 +3,7 @@
 
 A desktop notification app for Apex Legends map rotations. Using https://apexlegendsapi.com/ and [Beeep](https://github.com/gen2brain/beeep), a cross-platform Go notification library.
 
-If you wish you use this, an API key can be generated (relatively) anonymously at apexlegendsapi.com.
+If you wish you use this, an API key can be generated (relatively) anonymously at apexlegendsapi.com. Add your key (and other user-specific info) to `config.hcl` in the appropriate place.
 
 ## Tested Platforms
 
@@ -17,4 +17,4 @@ If you wish you use this, an API key can be generated (relatively) anonymously a
 ![image](https://user-images.githubusercontent.com/15215359/121760302-02a4ff80-caf8-11eb-9f43-43689ecb37a4.png)
 
 
-As I test on new environments, I will update the README. It's obviously a bit of a kludge to have a cmd window up in Windows (and to run from a shell in \*Nix as well), so I may look into running this as a tray applet (on top of all the other things I have planned). On top of making for cleaner execution, this would also have the benefit of allowing UI-driven configuration, and more stylized notifications (Map-as-background, for instance). That's kinda a re-write though, and this was a simple project to mess around in Go a bit more.
+As I test on new environments, I will update the README. It's obviously a bit of a kludge to have a cmd window up in Windows (and to run from a shell in \*Nix as well), so I may look into running this as a tray applet (on top of all the other things I have planned). On top of making for cleaner execution, this would also have the benefit of allowing UI-driven configuration, and more stylized notifications (Map-as-background, for instance). That's kinda a re-write though, and this was a simple project to mess around in Go a bit more. 🤷
