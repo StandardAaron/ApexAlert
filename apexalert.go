@@ -27,7 +27,13 @@ import (
 	"time"
 
 	"github.com/gen2brain/beeep"
-	"github.com/hashicorp/hcl/v2/hclsimple"
+	//	"github.com/hashicorp/hcl/v2"
+
+	//	"github.com/hashicorp/hcl/v2/hclsimple"
+	"github.com/hashicorp/hcl/v2"
+	"github.com/hashicorp/hcl/v2/gohcl"
+	"github.com/hashicorp/hcl/v2/hclparse"
+	"github.com/zclconf/go-cty/cty"
 )
 
 // Current and Next are reusable types in their parent structs
@@ -83,28 +89,35 @@ type ApexMaps struct {
 	Ranked       Ranked       `json:"ranked"`
 }
 
+type Prefs struct {
+	ApiKey string   `hcl:"api_key"`
+	Remain hcl.Body `hcl:",remain"`
+}
 type Configuration struct {
-	ApiKey string `hcl:"api_key"`
+	MapURL string `hcl:"map_url"`
 }
 
 func readConfig() (config Configuration) {
-	err := hclsimple.DecodeFile("config.hcl", nil, &config)
-	if err != nil {
-		panic(fmt.Sprintf("Failed to load configuration: %s", err))
+	parser := hclparse.NewParser()
+	parsedHCL, diags := parser.ParseHCLFile("config.hcl")
+	if diags.HasErrors() {
+		panic("error parsing HCL...")
 	}
-	return
-}
-
-func getApiUrl() (apiUrl string) {
-	//Make sure you request a key from https://apexlegendsapi.com/
-	c := readConfig()
-	apiUrl += "https://api.mozambiquehe.re/maprotation?version=2&auth=" + string(c.ApiKey)
+	var prefs Prefs
+	gohcl.DecodeBody(parsedHCL.Body, nil, &prefs)
+	ctx := &hcl.EvalContext{
+		Variables: map[string]cty.Value{
+			"api_key": cty.StringVal(prefs.ApiKey),
+		},
+	}
+	gohcl.DecodeBody(prefs.Remain, ctx, &config)
 	return
 }
 
 func getMapRotationData() ApexMaps {
 	//Hit the endpoint
-	apiURL := getApiUrl()
+	config := readConfig()
+	apiURL := config.MapURL
 	resp, err := http.Get(apiURL)
 	if err != nil {
 		fmt.Println("http get error: ", err)
